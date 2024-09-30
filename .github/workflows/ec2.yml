@@ -10,14 +10,14 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "ec2" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "ec2" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: production
+    environment: ec2
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -37,7 +37,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: production
+    environment: ec2
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -51,5 +51,5 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }} # 必須
       - name: run deploy script
         run: |
-          scp ~/SpringbootLoginQiita-0.0.1-SNAPSHOT.war ec2-user@3.115.5.232:~/ROOT.war
-          ssh ec2-user@3.115.5.232 "~/tomcat-build.sh"
+          scp ~/SpringbootLoginQiita-0.0.1-SNAPSHOT.war ec2-user@${{ vars.EC2_HOST }}:~/ROOT.war
+          ssh ec2-user@${{ vars.EC2_HOST }} "~/tomcat-build.sh"
